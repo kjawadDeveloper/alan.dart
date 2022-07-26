@@ -10,22 +10,21 @@ import 'package:test/test.dart';
 
 import 'tx_signer_test.mocks.dart';
 
-@GenerateMocks([AuthQuerier, NodeQuerier])
+@GenerateMocks([AuthQuerier])
 void main() {
   late AuthQuerier authQuerier;
-  late NodeQuerier nodeQuerier;
 
   late TxSigner signer;
 
   setUp(() {
     authQuerier = MockAuthQuerier();
-    nodeQuerier = MockNodeQuerier();
-    signer = TxSigner(authQuerier: authQuerier, nodeQuerier: nodeQuerier);
+
+    signer = TxSigner(authQuerier: authQuerier, chainId: 'cosmos-hub2');
   });
 
   final networkInfo = NetworkInfo.fromSingleHost(
     bech32Hrp: 'cosmos',
-    host: 'test',
+    host: 'test', chainId: 'cosmos-hub2',
   );
   final mnemonic = [
     'sibling',
@@ -64,9 +63,6 @@ void main() {
       return Future.value(BaseAccount(account));
     });
 
-    when(nodeQuerier.getNodeInfo(networkInfo.restEndpoint)).thenAnswer((_) {
-      return Future.value(NodeInfo(network: 'cosmos-hub2'));
-    });
 
     // Build a transaction
     final msg = bank.MsgSend.create();
@@ -114,9 +110,6 @@ void main() {
       return Future.value(BaseAccount(account));
     });
 
-    when(nodeQuerier.getNodeInfo(networkInfo.restEndpoint)).thenAnswer((_) {
-      return Future.value(NodeInfo(network: 'testchain'));
-    });
 
     // Build a transaction
     final msg = bank.MsgSend.create();
@@ -150,7 +143,7 @@ void main() {
     expect(signedTx.signatures.length, 1);
     expect(
       base64.encode(signedTx.signatures[0]),
-      'KyhklFvUgVDfSrk7K7UsvWsjax2BvjZ3F4Ra49idyMQM7IDP/j+fWEfCuIaFucY2YVtS59xgWL1rN/Fsyrv4bQ==',
+      'H3XUJ5nbjROfcLi+nxNUZaLpqsRgoSrSQQT7cT+I7fRADfT6sB2r3nC1rbzAjYQPYOhShNzBAfgNdifUs1OYCg==',
     );
   });
 }

@@ -37,6 +37,7 @@ Map<String, dynamic> _$LCDInfoToJson(LCDInfo instance) => <String, dynamic>{
 NetworkInfo _$NetworkInfoFromJson(Map<String, dynamic> json) {
   $checkKeys(json, requiredKeys: const ['bech32_hrp']);
   return NetworkInfo(
+    chainId: json['chainId'],
     bech32Hrp: json['bech32_hrp'] as String,
     lcdInfo: LCDInfo.fromJson(json['lcdInfo'] as Map<String, dynamic>),
     grpcInfo: GRPCInfo.fromJson(json['grpcInfo'] as Map<String, dynamic>),
@@ -48,4 +49,5 @@ Map<String, dynamic> _$NetworkInfoToJson(NetworkInfo instance) =>
       'bech32_hrp': instance.bech32Hrp,
       'lcdInfo': instance.lcdInfo.toJson(),
       'grpcInfo': instance.grpcInfo.toJson(),
+      'chainId' : instance.chainId
     };

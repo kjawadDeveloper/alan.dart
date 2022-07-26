@@ -10,29 +10,24 @@ import 'package:protobuf/protobuf.dart';
 /// be sent to the chain.
 class TxSigner {
   final AuthQuerier _authQuerier;
-  final NodeQuerier _nodeQuerier;
+  final String _chainId;
 
-  TxSigner({
-    required AuthQuerier authQuerier,
-    required NodeQuerier nodeQuerier,
-  })  : _authQuerier = authQuerier,
-        _nodeQuerier = nodeQuerier;
+  TxSigner({required AuthQuerier authQuerier, required String chainId})
+      : _authQuerier = authQuerier,
+        _chainId = chainId;
 
   /// Builds a new [TxSigner] from a given gRPC client channel and HTTP client.
-  factory TxSigner.build(
-    grpc.ClientChannel clientChannel,
-    http.Client httpClient,
-  ) {
+  factory TxSigner.build(grpc.ClientChannel clientChannel, http.Client httpClient, String chainId) {
     return TxSigner(
       authQuerier: AuthQuerier.build(clientChannel),
-      nodeQuerier: NodeQuerier.build(httpClient),
+      chainId: chainId,
     );
   }
 
   /// Builds a new [TxSigner] from the given [NetworkInfo].
   factory TxSigner.fromNetworkInfo(NetworkInfo info) {
     final httpClient = http.Client();
-    return TxSigner.build(info.gRPCChannel, httpClient);
+    return TxSigner.build(info.gRPCChannel, httpClient, info.chainId);
   }
 
   /// Creates a new [Tx] object containing the given [msgs] and signs it using
@@ -62,11 +57,6 @@ class TxSigner {
         'Account ${wallet.bech32Address} does not exist on chain',
       );
     }
-
-    // Get the node info data
-    final nodeInfo = await _nodeQuerier.getNodeInfo(
-      wallet.networkInfo.restEndpoint,
-    );
 
     // Get the public key from the account, or generate it if the
     // chain does not have it yet
@@ -104,7 +94,7 @@ class TxSigner {
     // Generate the bytes to be signed.
     final handler = config.signModeHandler();
     final signerData = SignerData(
-      chainId: nodeInfo.network,
+      chainId: _chainId,
       accountNumber: account.accountNumber,
       sequence: account.sequence,
     );

@@ -136,20 +136,16 @@ class NetworkInfo extends Equatable {
   @JsonKey(name: 'grpcInfo')
   final GRPCInfo grpcInfo;
 
-  NetworkInfo({
-    required this.bech32Hrp,
-    required this.lcdInfo,
-    required this.grpcInfo,
-  });
+  final String chainId;
 
-  factory NetworkInfo.fromSingleHost({
-    required String bech32Hrp,
-    required String host,
-  }) {
+  NetworkInfo({required this.bech32Hrp, required this.lcdInfo, required this.grpcInfo, required this.chainId});
+
+  factory NetworkInfo.fromSingleHost({required String bech32Hrp, required String host, required String chainId}) {
     return NetworkInfo(
       bech32Hrp: bech32Hrp,
       lcdInfo: LCDInfo(host: host),
       grpcInfo: GRPCInfo(host: host),
+      chainId: chainId,
     );
   }
 

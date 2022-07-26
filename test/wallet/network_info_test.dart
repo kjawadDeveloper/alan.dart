@@ -6,6 +6,7 @@ void main() {
     final info = NetworkInfo.fromSingleHost(
       bech32Hrp: 'test',
       host: 'test.example.com',
+      chainId: 'cosmos-hub'
     );
     final json = info.toJson();
     final fromJson = NetworkInfo.fromJson(json);
